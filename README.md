@@ -1,7 +1,7 @@
 
-# CA Expo
+# Node Chat Tutorial
 
-  The application for CA
+  The sample application of chat room, using NodeJS, Socket.io, and Express. This application is using Jade as HTML rendering engine and CouchDB as the database. For the middleware of CouchDB and NodeJS, I am using Nano.
 
 ## Building
 
