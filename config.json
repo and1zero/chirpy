@@ -1,0 +1,14 @@
+{
+  "app": {
+    "host": "192.168.100.58",
+    "port": 8080,
+    "max_players": 3
+  },
+  "couch": {
+    "host": "localhost",
+    "port": 5984,
+    "db": "ca_expo_2012",
+    "user": "root",
+    "pass": "password"
+  }
+}
