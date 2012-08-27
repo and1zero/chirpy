@@ -1,0 +1,10 @@
+extends layout
+
+block content
+
+  script(src='/javascripts/game.js')
+  .container-fluid
+    input(type='hidden', id='myUsername', value='#{username}')
+    .row-fluid
+      .span9
+        #game.well
