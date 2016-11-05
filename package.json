@@ -1,14 +1,17 @@
 {
-  "name": "CA-Expo",
-  "version": "1.0.0",
-  "private": true,
-  "scripts": {
-    "start": "node app"
+  "name": "nodejs-chat-tutorial",
+  "version": "2.0.0",
+  "main": "index.js",
+  "repository": {
+    "url": "https://github.com/and1zero/nodejs-chat-tutorial.git",
+    "type": "git"
   },
+  "author": "Andi Susanto <andi.xusanto@gmail.com>",
+  "license": "MIT",
   "dependencies": {
-    "express": "3.0.0rc3",
-    "jade": "*",
-    "socket.io": "*",
-    "nano": "3.3.0"
+    "bufferutil": "1.2.1",
+    "express": "4.14.0",
+    "utf-8-validate": "1.2.1",
+    "ws": "1.1.1"
   }
 }

@@ -1,28 +1,20 @@
+# Nodejs Chat Tutorial
 
-# Node Chat Tutorial
+## Goal
+Create a minimal barebone chat app in heroku. This is the [tutorial](https://devcenter.heroku.com/articles/node-websockets).
 
-  The sample application of chat room, using NodeJS, Socket.io, and Express. This application is using Jade as HTML rendering engine and CouchDB as the database. For the middleware of CouchDB and NodeJS, I am using Nano.
+## Requirements
+- Node
+- NPM (or yarn)
 
-## Building
-
-Important notice:
-- Before setup, we have to have nodeJS and npm installed as well. Instructions can be found here: https://github.com/joyent/node/wiki/Installing-Node.js-via-package-manager
-- Before setup, we must install couchdb on the server. The file has been included in build-couchdb folder and we must follow this link for instruction: https://github.com/iriscouch/build-couchdb/
-
-Setup:
-
-```
-source_codes$ npm install
+## Installation
+```bash
+$ npm install
+$ npm start
 ```
 
-then start the server:
-
+Or if you have `yarn` installed
+```bash
+$ yarn install
+$ yarn start
 ```
-source_codes$ node app
-```
-
-All dependencies are listed under package.json
-
-## Contributing
-
-  - __dont__ edit the HTML directly, edit the _jade_.
