@@ -89,6 +89,7 @@
         // if we send our own message, display it differently
         appendChat({
           uuid: uuid,
+          username: getUserName(),
           data: text,
           date: Date.now()
         });
@@ -98,7 +99,7 @@
       var appendChat = function(message) {
         var article = document.createElement('article');
         article.className = 'uk-comment ' + (message.uuid == uuid ? 'uk-comment-primary' : '');
-        article.innerHTML = '<header class="uk-comment-header"><h4 class="uk-comment-title">' + getUserName() + '</h4><div class="uk-comment-meta">' + new Date(message.date).toString() + '</div></header>' +
+        article.innerHTML = '<header class="uk-comment-header"><h4 class="uk-comment-title">' + message.username + '</h4><div class="uk-comment-meta">' + new Date(message.date).toString() + '</div></header>' +
           '<div class="uk-comment-body">' + message.data + '</div>';
         var li = document.createElement('li');
         li.appendChild(article);
