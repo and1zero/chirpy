@@ -25,8 +25,8 @@ $ git push heroku master
 ```
 
 ## Roadmap (aka nice-to-have things)
-- [] User recognition, probably using `LocalStorage` or third party authentication.
-- [] Client recognition on the server side.
-- [] Persist chat history? Is it possible?
-- [] Use proper frontend framework (e.g. React, Vue, Angular, or whatever is hip) so that we don't have to worry about implementing UX stuff (like changing data or state).
-- [] *After* establishing proper frontend framework, we can do nice stuff like markdown, github integration, list of online users.
+- [ ] User recognition, probably using `LocalStorage` or third party authentication.
+- [ ] Client recognition on the server side.
+- [ ] Persist chat history? Is it possible?
+- [ ] Use proper frontend framework (e.g. React, Vue, Angular, or whatever is hip) so that we don't have to worry about implementing UX stuff (like changing data or state).
+- [ ] *After* establishing proper frontend framework, we can do nice stuff like markdown, github integration, list of online users.
