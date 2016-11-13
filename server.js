@@ -13,13 +13,34 @@ const server = express()
 
 const wss = new SocketServer({ server });
 
+// Broadcast to all.
+wss.broadcast = function broadcast(data) {
+  wss.clients.forEach(function each(client) {
+    client.send(data);
+  });
+};
+
 wss.on('connection', (ws) => {
   console.log('Client connected');
-  ws.on('close', () => console.log('Client disconnected'));
+  ws.on('close', () => {
+    console.log('Client disconnected')
+  });
+  ws.on('message', (data) => {
+    // data is already stringified
+    console.log(data);
+    // Broadcast to everyone else.
+    wss.clients.forEach((client) => {
+      if (ws !== client) {
+        client.send(data);
+      }
+    });
+  });
 });
 
 setInterval(() => {
-  wss.clients.forEach((client) => {
-    client.send(new Date().toTimeString());
-  });
+  const message = {
+    type: 'updateTime',
+    date: Date.now()
+  };
+  wss.broadcast(JSON.stringify(message));
 }, 1000);
