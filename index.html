@@ -10,12 +10,12 @@
     <div class="uk-container uk-container-center uk-margin-top uk-margin-large-bottom">
       <p id="server-time"></p>
       <div id="app">
-        <ul id="chat" class="uk-comment-list"></ul>
+        <div id="chat" class="uk-overflow-container" style="max-height: 100%;"></div>
         <p id="log" class="uk-text-muted"></p>
-        <form id="form" class="uk-form">
+        <form id="form" class="uk-form" data-uk-sticky="{bottom: 0}">
           <fieldset data-uk-margin>
             <input type="text" name="username" placeholder="My name" class="uk-form-large" />
-            <input type="text" name="message" placeholder="Type something" class="uk-form-large uk-form-width-large" />
+            <input type="text" name="message" placeholder="Type something 😇" class="uk-form-large uk-form-width-large" />
             <button class="uk-button uk-button-primary uk-button-large">
               Submit
             </button>
@@ -96,14 +96,14 @@
       });
 
       // Functions
+      var chatElement = document.getElementById('chat');
       var appendChat = function(message) {
         var article = document.createElement('article');
-        article.className = 'uk-comment ' + (message.uuid == uuid ? 'uk-comment-primary' : '');
-        article.innerHTML = '<header class="uk-comment-header"><h4 class="uk-comment-title">' + message.username + '</h4><div class="uk-comment-meta">' + new Date(message.date).toString() + '</div></header>' +
-          '<div class="uk-comment-body">' + message.data + '</div>';
-        var li = document.createElement('li');
-        li.appendChild(article);
-        document.getElementById('chat').appendChild(li);
+        article.className = 'uk-panel uk-margin-bottom uk-panel-box ' + (message.uuid == uuid ? 'uk-panel-box-primary' : '');
+        article.innerHTML = '<h3 class="uk-panel-title">' + message.username + ' <small class="uk-text-muted">' + new Date(message.date).toString() + '</small></h3>' + message.data;
+        chatElement.appendChild(article);
+        // scroll the element to bottom
+        chatElement.scrollTop = chatElement.scrollHeight;
       };
 
       var getUserName = function() {
