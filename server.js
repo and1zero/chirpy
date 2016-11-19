@@ -3,6 +3,7 @@
 const express = require('express');
 const socketIO = require('socket.io');
 const path = require('path');
+const cleverbot = require('cleverbot.io');
 
 const PORT = process.env.PORT || 3000;
 const INDEX = path.join(__dirname, 'index.html');
@@ -13,6 +14,11 @@ const server = express()
   .listen(PORT, () => console.log(`Listening on ${ PORT }`));
 
 const io = socketIO(server);
+
+// Cleverbot will attempt to join if there is no one else connected
+const bot = new cleverbot(process.env.CLEVERBOT_API_USER, process.env.CLEVERBOT_API_KEY);
+
+bot.setNick('jenkins');
 
 // Remember the clients
 let clients = {};
@@ -35,6 +41,9 @@ io.on('connection', (socket) => {
     // save it in list of clients
     clients[socket.id] = username;
     socket.broadcast.emit('log', socket.username + ' has joined the chat');
+    if (Object.keys(clients).length == 1) {
+      socket.emit('log', 'Don\'t worry, you are not alone!');
+    }
   });
 
   socket.on('disconnect', () => {
@@ -42,13 +51,35 @@ io.on('connection', (socket) => {
     delete clients[socket.id];
   });
 
-  socket.on('chat message', (message) => {
-    // Sending data to everyone except the sender
-    chats.push(message);
-    if (chats.length > MAX_CHAT_ITEMS) {
-      chats.splice(0, 1);
-    }
-    socket.broadcast.emit('chat message', message);
+  bot.create(function(err, session) {
+    socket.on('chat message', (message) => {
+      chats.push(message);
+      if (chats.length > MAX_CHAT_ITEMS) {
+        chats.splice(0, 1);
+      }
+      if (Object.keys(clients).length == 1) {
+        // let cleverbot answer
+        bot.ask(message.data, function(err, response) {
+          // we should log the response to history too
+          let botMessage = {
+            username: 'jenkins',
+            data: '...',
+            timestamp: Date.now()
+          };
+          if (err) {
+            console.error(err);
+            botMessage.data = 'Seems like cleverbot is choking on its own arrogance.';
+          } else {
+            botMessage.data = response;
+          }
+          chats.push(botMessage)
+          socket.emit('chat message', botMessage);
+        });
+      } else {
+        // Sending data to everyone except the sender
+        socket.broadcast.emit('chat message', message);
+      }
+    });
   });
 
   socket.on('typing', (message) => socket.broadcast.emit('typing', socket.username + ' is typing...'));
