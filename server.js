@@ -38,8 +38,8 @@ io.on('connection', (socket) => {
   });
 
   socket.on('disconnect', () => {
+    socket.broadcast.emit('log', clients[socket.id] + ' has left the chat');
     delete clients[socket.id];
-    socket.broadcast.emit('log', socket.username + ' has left the chat');
   });
 
   socket.on('chat message', (message) => {
