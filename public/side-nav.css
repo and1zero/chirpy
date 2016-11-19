@@ -6,6 +6,7 @@
   padding: 0;
   margin: 0;
   color: #FFF;
+  font-size: 1rem;
 }
 
 .side-nav {
@@ -108,4 +109,21 @@
 
 .side-nav__content li:hover {
   background: #CCC;
+}
+
+.side-nav__log {
+  font-size: .8rem;
+  padding: .5rem .8rem;
+  color: #999;
+  -webkit-animation: color-change 1s infinite;
+  -moz-animation: color-change 1s infinite;
+  -o-animation: color-change 1s infinite;
+  -ms-animation: color-change 1s infinite;
+  animation: color-change 1s infinite;
+}
+
+.side-nav__footer {
+  font-size: .8rem;
+  padding: .5rem .8rem;
+  color: #999;
 }

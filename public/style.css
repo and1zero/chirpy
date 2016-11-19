@@ -18,6 +18,19 @@ body {
   background-color: #eee;
 }
 
+a,
+a:link,
+a:active,
+a:visited,
+a:hover {
+  text-decoration: none;
+  color: #d30;
+  transition: all 0.3s ease;
+}
+a:hover {
+  text-decoration: underline;
+}
+
 /* using flexbox: https://sebastianbourges.com/creating-a-chat-ui-with-flexbox/ */
 .chat-wrapper {
   display: flex;
@@ -41,6 +54,10 @@ body {
     0 4px 2px -2px rgba(0,0,0,.2);
 
   z-index: 1;
+}
+
+.header .brand {
+  margin-left: 10px;
 }
 
 .chat-body {

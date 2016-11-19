@@ -10,6 +10,7 @@
     <link rel="stylesheet" type="text/css" href="style.css" />
     <link rel="stylesheet" type="text/css" href="side-nav.css" />
     <link rel="stylesheet" type="text/css" href="messages.css" />
+    <link rel="stylesheet" type="text/css" href="icons.css" />
     <style type="text/css">
       #templates {
         display: none;
@@ -50,8 +51,8 @@
 
     <div class="chat-wrapper">
       <div class="header">
-        <button class="js-menu-show header__menu-toggle material-icons">menu</button>
-        <p>Server time: <span id="server-time"></span></p>
+        <button class="js-menu-show header__menu-toggle"><span class="icon-menu"></span></button>
+        <p class="brand">Chirpy</p>
       </div>
 
       <div class="chat-body">
@@ -62,7 +63,7 @@
         <p id="chat-log-typing"></p>
         <form id="chat-form">
           <div class="chat-item has-input">
-            <button>Send</button>
+            <button><span class="icon-send"></span></button>
             <div class="bubble">
               <p><input id="my-message" type="text" name="message" placeholder="Type something 😇" class="uk-form-large uk-form-width-large" autocomplete="off" /></p>
             </div>
@@ -74,16 +75,16 @@
     <!-- sidenav -->
     <aside class="js-side-nav side-nav">
       <nav class="js-side-nav-container side-nav__container">
-        <button class="js-menu-hide side-nav__hide material-icons">close</button>
+        <button class="js-menu-hide side-nav__hide"><span class="icon-cross"></span></button>
         <header class="side-nav__header">
           Chirpy
         </header>
+        <p class="side-nav__log">Server time: <span id="server-time"></span></p>
         <ul id="users" class="side-nav__content">
-          <li>One</li>
-          <li>Two</li>
-          <li>Three</li>
-          <li>Four</li>
         </ul>
+        <div class="side-nav__footer">
+          <p>Made with <span class="icon-heart"></span> by <a href="https://and1zero.github.io">and1zero</a></p>
+        </div>
       </nav>
     </aside>
     <!-- sidenav -->
