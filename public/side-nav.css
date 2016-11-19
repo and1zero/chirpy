@@ -88,6 +88,7 @@
   padding: 16px;
   align-items: flex-end;
   font-size: 24px;
+  background-position: center;
 }
 
 .side-nav__content {
@@ -115,15 +116,14 @@
   font-size: .8rem;
   padding: .5rem .8rem;
   color: #999;
-  -webkit-animation: color-change 1s infinite;
-  -moz-animation: color-change 1s infinite;
-  -o-animation: color-change 1s infinite;
-  -ms-animation: color-change 1s infinite;
-  animation: color-change 1s infinite;
 }
 
 .side-nav__footer {
   font-size: .8rem;
   padding: .5rem .8rem;
   color: #999;
+}
+
+.list-user {
+  display: flex;
 }

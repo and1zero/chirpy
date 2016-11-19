@@ -46,6 +46,10 @@
       <li class="chat-log">
         <p></p>
       </li>
+      <li class="list-user" data-id="{{id}}">
+        <img class="avatar" width="48" height="48">
+        <p></p>
+      </li>
     </div>
     <!-- templates -->
 
@@ -60,7 +64,7 @@
       </div>
 
       <div class="chat footer">
-        <p id="chat-log-typing"></p>
+        <p id="chat-log-typing color-change"></p>
         <form id="chat-form">
           <div class="chat-item has-input">
             <button><span class="icon-send"></span></button>
@@ -79,9 +83,10 @@
         <header class="side-nav__header">
           Chirpy
         </header>
-        <p class="side-nav__log">Server time: <span id="server-time"></span></p>
-        <ul id="users" class="side-nav__content">
-        </ul>
+        <p class="side-nav__log">You are chatting as <span id="username"></span></p>
+        <p class="side-nav__log color-change">Server time: <span id="server-time"></span></p>
+        <p class="side-nav__log">Online Users</p>
+        <ul id="users" class="side-nav__content"></ul>
         <div class="side-nav__footer">
           <p>Made with <span class="icon-heart"></span> by <a href="https://and1zero.github.io">and1zero</a></p>
         </div>
@@ -104,6 +109,12 @@
 
       socket.emit('user connected', username);
 
+      // assign an avatar
+      var avatar = 'https://robohash.org/' + username + ".png";
+
+      document.getElementById('username').innerHTML = username;
+      document.querySelector('header.side-nav__header').style.backgroundImage='url(' + avatar + ')';
+
       socket.on('time', function(timestamp) {
         document.getElementById('server-time').innerHTML = new Date(timestamp).toTimeString();
       });
@@ -111,6 +122,19 @@
       socket.on('load chat histories', function(chats){
         chats.forEach(function(chat) {
           appendChat(chat);
+        });
+      });
+
+      var userList = document.getElementById('users');
+      var userTemplate = document.querySelector('#templates > .list-user');
+      socket.on('load connected users', function(clients) {
+        userList.innerHTML = ''; // gotta reset
+        Object.values(clients).forEach(function(user) {
+          var el = userTemplate.cloneNode(true);
+          el.dataset.id = user;
+          el.querySelector('.avatar').src = 'https://robohash.org/' + user + '.png?size=48x48';
+          el.querySelector('p').textContent = user;
+          userList.appendChild(el);
         });
       });
 

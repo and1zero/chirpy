@@ -88,15 +88,18 @@ a:hover {
   padding: 0 1rem;
   color: #999;
   font-size: .8rem;
+}
+
+#chat-form {
+  width: 100%;
+}
+
+.color-change {
   -webkit-animation: color-change 1s infinite;
   -moz-animation: color-change 1s infinite;
   -o-animation: color-change 1s infinite;
   -ms-animation: color-change 1s infinite;
   animation: color-change 1s infinite;
-}
-
-#chat-form {
-  width: 100%;
 }
 
 @-webkit-keyframes color-change {
