@@ -1,0 +1,61 @@
+/* css resets */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  background: #FAFAFA;
+  font-family: 'Roboto', Arial, sans-serif;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  background-color: #eee;
+}
+
+/* using flexbox: https://sebastianbourges.com/creating-a-chat-ui-with-flexbox/ */
+.chat-wrapper {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  height: 100%;
+}
+
+.header {
+  display: flex;
+  flex: 1 1 5%;
+  min-height: 3rem;
+  max-height: 3rem;
+
+  padding: 1rem 2rem;
+  background-color: #607D8B;
+  color: #fff;
+  box-shadow: 0 4px 5px 0 rgba(0,0,0,.14),
+    0 2px 9px 1px rgba(0,0,0,.12),
+    0 4px 2px -2px rgba(0,0,0,.2);
+}
+
+.chat-body {
+  display: flex;
+  flex: 1 1 85%;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  align-content: flex-start;
+  overflow: auto;
+}
+
+.chat.footer {
+  display: flex;
+  flex: 1 1 10%;
+  min-height: 4rem;
+  max-height: 4rem;
+}
+
+#chat-form {
+  width: 100%;
+}

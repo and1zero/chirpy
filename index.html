@@ -1,70 +1,120 @@
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="Andi Susanto">
     <title>Chirpy</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/uikit/2.27.2/css/uikit.almost-flat.min.css" />
-    <script type="text/javascript" src="https://code.jquery.com/jquery-3.0.0.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/2.27.2/js/uikit.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="style.css" />
+    <link rel="stylesheet" type="text/css" href="messages.css" />
+    <style type="text/css">
+      #templates {
+        display: none;
+        opacity: 0;
+      }
+    </style>
   </head>
   <body>
-    <div class="uk-container uk-container-center uk-margin-top uk-margin-large-bottom">
-      <p id="server-time"></p>
-      <div id="app">
-        <div id="chat" class="uk-overflow-container" style="max-height: 100%;"></div>
-        <p id="log" class="uk-text-muted"></p>
-        <form id="form" class="uk-form" data-uk-sticky="{bottom: 0}">
-          <fieldset data-uk-margin>
-            <input type="text" name="username" placeholder="My name" class="uk-form-large" />
-            <input type="text" name="message" placeholder="Type something 😇" class="uk-form-large uk-form-width-large" />
-            <button class="uk-button uk-button-primary uk-button-large">
-              Submit
-            </button>
-          </fieldset>
+    <!-- templates -->
+    <div id="templates">
+      <li class="chat-item" data-id="{{id}}">
+        <img class="avatar" width="48" height="48">
+        <div class="bubble">
+          <p></p>
+          <img width="300" height="300">
+          <div class="meta">
+            <time class="posted-date"></time>
+          </div>
+        </div>
+      </li>
+      <li class="chat-item tombstone" data-id="{{id}}">
+        <img class="avatar" width="48" height="48" src="images/unknown.jpg">
+        <div class="bubble">
+          <p></p>
+          <p></p>
+          <p></p>
+          <div class="meta">
+            <time class="posted-date"></time>
+          </div>
+        </div>
+      </li>
+    </div>
+    <!-- templates -->
+
+    <div class="chat-wrapper">
+      <div class="header">
+        <p>Server time: <span id="server-time"></span></p>
+      </div>
+
+      <div class="chat-body">
+        <ul id="chat-timeline"></ul>
+        <p id="chat-log"></p>
+      </div>
+
+      <div class="chat footer">
+        <form id="chat-form">
+          <div class="chat-item has-input">
+            <button>Send</button>
+            <div class="bubble">
+              <p><input id="my-message" type="text" name="message" placeholder="Type something 😇" class="uk-form-large uk-form-width-large" autocomplete="off" /></p>
+            </div>
+          </div>
         </form>
       </div>
     </div>
+
+    <script src="/socket.io/socket.io.js"></script>
     <script>
-      var uuid = Math.random().toString(36).substring(7);
-      var HOST = location.origin.replace(/^http/, 'ws');
-      var ws = new WebSocket(HOST);
+      var uuid = Math.random().toString(36).substring(7, 13); // get 6-length random string
+      var socket = io();
 
       // Socket listener
-      ws.onmessage = function (event) {
-        var message = JSON.parse(event.data);
-        console.log(event);
-        switch(message.type) {
-          case 'typing':
-            // Fill in the logs
-            $('#log').text(message.username + ' is typing...');
-            break;
-          case 'doneTyping':
-            $('#log').empty();
-            break;
-          case 'message':
-            // Time to populate something
-            appendChat(message);
-            break;
-          default:
-            // update server time
-            $('#server-time').text('Server time: ' + new Date(message.date).toString());
-        }
-      };
+      socket.on('time', function(timestamp) {
+        document.getElementById('server-time').innerHTML = new Date(timestamp).toTimeString();
+      });
 
-      // Form submission
-      var input = $('input[name="message"]');
-      var text = '';
+      socket.on('load chat histories', function(chats){
+        chats.forEach(function(chat) {
+          appendChat(chat);
+        });
+      });
+
+      socket.on('chat message', function(chat) {
+        appendChat(chat);
+      });
+
+      socket.on('typing', function(data) {
+        var data = JSON.parse(data);
+        $('#chat-log').text(data.username + ' is typing...');
+      });
+
+      socket.on('typing done', function() {
+        $('#chat-log').empty();
+      });
+
+      // document elements
+      var chatTimeline = document.getElementById('chat-timeline');
+      var form = document.getElementById('chat-form');
+      var inputMessage = document.getElementById('my-message');
+      var chatTemplate = document.querySelector('#templates > .chat-item:not(.tombstone)');
 
       // Typing timer to keep track when user types
 	    var typingTimer;
       var doneTypingInterval = 5000;
 
-      input.keyup(function(event) {
+      // Listeners
+      if (form.attachEvent) {
+        form.attachEvent('submit', processForm);
+      } else {
+        form.addEventListener('submit', processForm);
+      }
+
+      inputMessage.addEventListener('keyup', function(e) {
+        var keyCode = e.which || e.keyCode;
         clearTimeout(typingTimer);
-        input.removeClass('uk-form-danger');
-        if (event.which != 13) {
-          if ($(this).val() == '') {
-            input.addClass('uk-form-danger');
-          }
+        if (keyCode != 13) { // 13 is enter
           emit('typing');
           typingTimer = setTimeout(doneTyping, doneTypingInterval);
         } else {
@@ -72,59 +122,69 @@
           doneTyping();
         }
       });
-
-      input.keydown(function(event) {
+      inputMessage.addEventListener('keydown', function(e) {
         clearTimeout(typingTimer);
       });
 
-      $('#form').submit(function(e) {
+      // Functions
+      function processForm(e) {
         e.preventDefault(); // prevent real form submission
-        text = input.val();
+        text = inputMessage.value;
         if (text == '') {
           return;
         }
-        emit('message', text);
-        input.val('');
+        emit('chat message', text);
+        inputMessage.value = '';
 
         // if we send our own message, display it differently
         appendChat({
           uuid: uuid,
           username: getUserName(),
           data: text,
-          date: Date.now()
+          timestamp: Date.now()
         });
-      });
 
-      // Functions
-      var chatElement = document.getElementById('chat');
-      var appendChat = function(message) {
-        var article = document.createElement('article');
-        article.className = 'uk-panel uk-margin-bottom uk-panel-box ' + (message.uuid == uuid ? 'uk-panel-box-primary' : '');
-        article.innerHTML = '<h3 class="uk-panel-title">' + message.username + ' <small class="uk-text-muted">' + new Date(message.date).toString() + '</small></h3>' + message.data;
-        chatElement.appendChild(article);
+        return false;
+      }
+
+      function appendChat(chat) {
+        var el = chatTemplate.cloneNode(true);
+        el.dataset.id = chat.uuid;
+        el.querySelector('.avatar').src = 'https://robohash.org/' + chat.uuid + '.png';
+        el.querySelector('.avatar').alt = chat.username;
+        el.querySelector('.bubble p').textContent = chat.data;
+        el.querySelector('.bubble .posted-date').textContent = new Date(chat.timestamp).toString();
+
+        if (chat.uuid == uuid) {
+          el.classList.add('from-me');
+        } else {
+          el.classList.remove('from-me');
+        }
+
+        chatTimeline.appendChild(el);
+
         // scroll the element to bottom
-        chatElement.scrollTop = chatElement.scrollHeight;
+        chatTimeline.scrollTop = chatTimeline.scrollHeight;
       };
 
-      var getUserName = function() {
-        return $('input[name="username"]').val() || uuid;
+      function getUserName() {
+        return uuid;
       };
 
-      var doneTyping = function() {
-        emit('doneTyping');
+      function doneTyping() {
+        emit('typing done');
       };
 
       // Websocket-related function
-      var emit = function(eventType, data) {
+      function emit(eventType, data) {
         // message to be sent to server
         var message = {
           uuid: uuid, // using uuid to identify each socket client
           username: getUserName(),
-          type: eventType,
           data: data,
-          date: Date.now()
+          timestamp: Date.now()
         };
-        ws.send(JSON.stringify(message));
+        socket.emit(eventType, message);
       };
     </script>
   </body>

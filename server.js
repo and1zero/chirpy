@@ -1,46 +1,47 @@
 'use strict';
 
 const express = require('express');
-const SocketServer = require('ws').Server;
+const socketIO = require('socket.io');
 const path = require('path');
 
 const PORT = process.env.PORT || 3000;
 const INDEX = path.join(__dirname, 'index.html');
 
 const server = express()
+  .use(express.static('public'))
   .use((req, res) => res.sendFile(INDEX) )
   .listen(PORT, () => console.log(`Listening on ${ PORT }`));
 
-const wss = new SocketServer({ server });
+const io = socketIO(server);
 
-// Broadcast to all.
-wss.broadcast = function broadcast(data) {
-  wss.clients.forEach(function each(client) {
-    client.send(data);
-  });
-};
+// Remember the clients
+let clients = {};
+// cache chat histories
+const MAX_CHAT_ITEMS = 20; // max chat messages to remember
+let chats = [];
 
-wss.on('connection', (ws) => {
-  console.log('Client connected');
-  ws.on('close', () => {
-    console.log('Client disconnected')
+io.on('connection', (socket) => {
+  // save connected client
+  clients[socket.id] = socket;
+  socket.broadcast.emit('user connected', socket.id);
+  socket.emit('load chat histories', chats);
+
+  socket.on('disconnect', () => {
+    delete clients[socket.id];
+    socket.broadcast.emit('user disconnected', socket.id);
   });
-  ws.on('message', (data) => {
-    // data is already stringified
-    console.log(data);
-    // Broadcast to everyone else.
-    wss.clients.forEach((client) => {
-      if (ws !== client) {
-        client.send(data);
-      }
-    });
+
+  socket.on('chat message', (message) => {
+    // Sending data to everyone except the sender
+    chats.push(message);
+    if (chats.length > MAX_CHAT_ITEMS) {
+      chats.splice(0, 1);
+    }
+    socket.broadcast.emit('chat message', message);
   });
+
+  socket.on('typing', (message) => socket.broadcast.emit('typing', message));
+  socket.on('typing done', (message) => socket.broadcast.emit('typing done', message));
 });
 
-setInterval(() => {
-  const message = {
-    type: 'updateTime',
-    date: Date.now()
-  };
-  wss.broadcast(JSON.stringify(message));
-}, 1000);
+setInterval(() => io.emit('time', Date.now()), 1000);
