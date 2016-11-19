@@ -43,12 +43,17 @@ io.on('connection', (socket) => {
     socket.broadcast.emit('log', socket.username + ' has joined the chat');
     if (Object.keys(clients).length == 1) {
       socket.emit('log', 'Don\'t worry, you are not alone!');
+    } else {
+      // Update online user list for other users
+      socket.broadcast.emit('load connected users', clients);
     }
   });
 
   socket.on('disconnect', () => {
     socket.broadcast.emit('log', clients[socket.id] + ' has left the chat');
     delete clients[socket.id];
+    // Update online user list for other users
+    socket.broadcast.emit('load connected users', clients);
   });
 
   bot.create(function(err, session) {

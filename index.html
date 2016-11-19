@@ -127,15 +127,23 @@
 
       var userList = document.getElementById('users');
       var userTemplate = document.querySelector('#templates > .list-user');
+      var onlineUsers;
       socket.on('load connected users', function(clients) {
-        userList.innerHTML = ''; // gotta reset
-        Object.values(clients).forEach(function(user) {
-          var el = userTemplate.cloneNode(true);
-          el.dataset.id = user;
-          el.querySelector('.avatar').src = 'https://robohash.org/' + user + '.png?size=48x48';
-          el.querySelector('p').textContent = user;
-          userList.appendChild(el);
+        onlineUsers = Object.values(clients).filter(function(user) {
+          return user != username;
         });
+        userList.innerHTML = ''; // gotta reset
+        if (onlineUsers.length > 0) {
+          onlineUsers.forEach(function(user) {
+            var el = userTemplate.cloneNode(true);
+            el.dataset.id = user;
+            el.querySelector('.avatar').src = 'https://robohash.org/' + user + '.png?size=48x48';
+            el.querySelector('p').textContent = user;
+            userList.appendChild(el);
+          });
+        } else {
+          userList.innerHTML = 'You are never alone';
+        }
       });
 
       socket.on('chat message', appendChat);
