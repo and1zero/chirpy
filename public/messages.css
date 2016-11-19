@@ -125,12 +125,10 @@
 }
 .has-input button {
   border-radius: 500px;
-  margin-left: 20px;
-  margin-right: 6px;
   min-width: 48px;
   order: 1;
   margin-left: 6px;
-  margin-right: 20px;
+  margin-right: 6px;
 
   background-color: #26a69a;
   color: #fff;
