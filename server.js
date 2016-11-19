@@ -20,15 +20,26 @@ let clients = {};
 const MAX_CHAT_ITEMS = 20; // max chat messages to remember
 let chats = [];
 
+io.use(function(socket, next) {
+  var handshake = socket.request;
+  next();
+});
+
 io.on('connection', (socket) => {
-  // save connected client
-  clients[socket.id] = socket;
-  socket.broadcast.emit('user connected', socket.id);
+  socket.emit('load connected users', clients);
   socket.emit('load chat histories', chats);
+
+  socket.on('user connected', (username) => {
+    // let server generate UUID
+    socket.username = username;
+    // save it in list of clients
+    clients[socket.id] = username;
+    socket.broadcast.emit('log', socket.username + ' has joined the chat');
+  });
 
   socket.on('disconnect', () => {
     delete clients[socket.id];
-    socket.broadcast.emit('user disconnected', socket.id);
+    socket.broadcast.emit('log', socket.username + ' has left the chat');
   });
 
   socket.on('chat message', (message) => {
@@ -40,7 +51,7 @@ io.on('connection', (socket) => {
     socket.broadcast.emit('chat message', message);
   });
 
-  socket.on('typing', (message) => socket.broadcast.emit('typing', message));
+  socket.on('typing', (message) => socket.broadcast.emit('typing', socket.username + ' is typing...'));
   socket.on('typing done', (message) => socket.broadcast.emit('typing done', message));
 });
 

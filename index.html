@@ -8,6 +8,7 @@
     <meta name="author" content="Andi Susanto">
     <title>Chirpy</title>
     <link rel="stylesheet" type="text/css" href="style.css" />
+    <link rel="stylesheet" type="text/css" href="side-nav.css" />
     <link rel="stylesheet" type="text/css" href="messages.css" />
     <style type="text/css">
       #templates {
@@ -25,6 +26,7 @@
           <p></p>
           <img width="300" height="300">
           <div class="meta">
+            <div class="author"></div>
             <time class="posted-date"></time>
           </div>
         </div>
@@ -40,20 +42,24 @@
           </div>
         </div>
       </li>
+      <li class="chat-log">
+        <p></p>
+      </li>
     </div>
     <!-- templates -->
 
     <div class="chat-wrapper">
       <div class="header">
+        <button class="js-menu-show header__menu-toggle material-icons">menu</button>
         <p>Server time: <span id="server-time"></span></p>
       </div>
 
       <div class="chat-body">
         <ul id="chat-timeline"></ul>
-        <p id="chat-log"></p>
       </div>
 
       <div class="chat footer">
+        <p id="chat-log-typing"></p>
         <form id="chat-form">
           <div class="chat-item has-input">
             <button>Send</button>
@@ -65,12 +71,38 @@
       </div>
     </div>
 
+    <!-- sidenav -->
+    <aside class="js-side-nav side-nav">
+      <nav class="js-side-nav-container side-nav__container">
+        <button class="js-menu-hide side-nav__hide material-icons">close</button>
+        <header class="side-nav__header">
+          Chirpy
+        </header>
+        <ul id="users" class="side-nav__content">
+          <li>One</li>
+          <li>Two</li>
+          <li>Three</li>
+          <li>Four</li>
+        </ul>
+      </nav>
+    </aside>
+    <!-- sidenav -->
+
+    <script src="detabinator.js"></script>
+    <script src="side-nav.js"></script>
     <script src="/socket.io/socket.io.js"></script>
     <script>
-      var uuid = Math.random().toString(36).substring(7, 13); // get 6-length random string
-      var socket = io();
+      var socket = io(location.origin, {
+        'reconnection': true,
+        'reconnectionDelay': 500,
+        'reconnectionAttempts': 10
+      });
 
-      // Socket listener
+      // The visitor is asked for their username...
+      var username = prompt('What\'s your username?') || Math.random().toString(36).substring(7, 13);
+
+      socket.emit('user connected', username);
+
       socket.on('time', function(timestamp) {
         document.getElementById('server-time').innerHTML = new Date(timestamp).toTimeString();
       });
@@ -81,17 +113,16 @@
         });
       });
 
-      socket.on('chat message', function(chat) {
-        appendChat(chat);
-      });
+      socket.on('chat message', appendChat);
 
-      socket.on('typing', function(data) {
-        var data = JSON.parse(data);
-        $('#chat-log').text(data.username + ' is typing...');
+      socket.on('log', appendLog);
+
+      socket.on('typing', function(text) {
+        document.getElementById('chat-log-typing').innerHTML = text;
       });
 
       socket.on('typing done', function() {
-        $('#chat-log').empty();
+        document.getElementById('chat-log-typing').innerHTML = '';
       });
 
       // document elements
@@ -99,6 +130,7 @@
       var form = document.getElementById('chat-form');
       var inputMessage = document.getElementById('my-message');
       var chatTemplate = document.querySelector('#templates > .chat-item:not(.tombstone)');
+      var logTemplate = document.querySelector('#templates > .chat-log');
 
       // Typing timer to keep track when user types
 	    var typingTimer;
@@ -138,8 +170,7 @@
 
         // if we send our own message, display it differently
         appendChat({
-          uuid: uuid,
-          username: getUserName(),
+          username: username,
           data: text,
           timestamp: Date.now()
         });
@@ -149,13 +180,14 @@
 
       function appendChat(chat) {
         var el = chatTemplate.cloneNode(true);
-        el.dataset.id = chat.uuid;
-        el.querySelector('.avatar').src = 'https://robohash.org/' + chat.uuid + '.png';
+        el.dataset.id = chat.username;
+        el.querySelector('.avatar').src = 'https://robohash.org/' + chat.username + '.png';
         el.querySelector('.avatar').alt = chat.username;
         el.querySelector('.bubble p').textContent = chat.data;
+        el.querySelector('.bubble .author').textContent = chat.username;
         el.querySelector('.bubble .posted-date').textContent = new Date(chat.timestamp).toString();
 
-        if (chat.uuid == uuid) {
+        if (chat.username == username) {
           el.classList.add('from-me');
         } else {
           el.classList.remove('from-me');
@@ -167,8 +199,13 @@
         chatTimeline.scrollTop = chatTimeline.scrollHeight;
       };
 
-      function getUserName() {
-        return uuid;
+      function appendLog(text) {
+        var el = logTemplate.cloneNode(true);
+        el.querySelector('p').textContent = text;
+        chatTimeline.appendChild(el);
+
+        // scroll the element to bottom
+        chatTimeline.scrollTop = chatTimeline.scrollHeight;
       };
 
       function doneTyping() {
@@ -179,8 +216,7 @@
       function emit(eventType, data) {
         // message to be sent to server
         var message = {
-          uuid: uuid, // using uuid to identify each socket client
-          username: getUserName(),
+          username: username,
           data: data,
           timestamp: Date.now()
         };

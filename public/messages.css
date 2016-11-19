@@ -11,7 +11,7 @@
   will-change: transform;
 }
 
-.chat-item {
+.chat-item, .chat-log {
   display: flex;
   padding: 10px 0;
   width: 100%;
@@ -27,10 +27,16 @@
   background-color: #fff;
 }
 
-.chat-item p {
+.chat-item p, .chat-log p {
   margin: 0;
   word-wrap: break-word;
   font-size: 13px;
+}
+
+.chat-log p {
+  width: 100%;
+  text-align: center;
+  color: #999;
 }
 
 .chat-item.tombstone p {
