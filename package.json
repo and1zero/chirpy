@@ -9,8 +9,11 @@
   "author": "Andi Susanto <andi.xusanto@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "cleverbot.io": "^1.0.4",
+    "better-cleverbot-io": "^1.0.2",
     "express": "^4.17.1",
     "socket.io": "^2.3.0"
+  },
+  "resolutions": {
+    "axios": ">=0.18.1"
   }
 }
