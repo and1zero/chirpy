@@ -4,8 +4,8 @@
 Create a minimal barebone chat app in heroku. This is the [tutorial](https://devcenter.heroku.com/articles/node-websockets).
 
 ## Requirements
-- Node (>= 4)
-- NPM (or yarn)
+- Node (>= 20)
+- NPM
 
 ## Installation
 ```bash
@@ -13,15 +13,16 @@ $ npm install
 $ npm start
 ```
 
-Or if you have `yarn` installed
-```bash
-$ yarn install
-$ yarn start
+## Running locally
+```
+$ npm start
+
+# then open localhost:3000
 ```
 
 ## Deploying to heroku
 ```bash
-$ git push heroku master
+$ git push heroku main
 ```
 
 ## Features

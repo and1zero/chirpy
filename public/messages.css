@@ -72,9 +72,9 @@
   left: -10px;
 }
 
-/*.bubble img {
-  width: 80%;
-}*/
+.bubble .author {
+  display: none;
+}
 
 .meta {
   font-size: 0.8rem;

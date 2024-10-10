@@ -1,6 +1,9 @@
 {
   "name": "nodejs-chat-tutorial",
-  "version": "2.0.0",
+  "version": "3.0.0",
+  "engines": {
+    "node": ">= 20"
+  },
   "main": "index.js",
   "repository": {
     "url": "https://github.com/and1zero/nodejs-chat-tutorial.git",
@@ -9,11 +12,7 @@
   "author": "Andi Susanto <andi.xusanto@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "better-cleverbot-io": "^1.0.2",
-    "express": "^4.17.1",
-    "socket.io": "^2.3.0"
-  },
-  "resolutions": {
-    "axios": ">=0.18.1"
+    "express": "^5.0.1",
+    "socket.io": "^4.8.0"
   }
 }
